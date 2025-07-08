@@ -1,0 +1,15 @@
+# Docker Volumes
+volumes/
+postgres_data/
+
+#System files
+*.log
+*.DS_Store
+
+#os/IDE files
+*.swp
+*.bak
+.vscode/
+.idea/
+
+
