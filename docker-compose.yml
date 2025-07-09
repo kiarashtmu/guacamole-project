@@ -32,6 +32,16 @@ services:
       - guacd
     networks:
       - guacnet
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - guacamole
+    networks:
+      - guacnet
 volumes:
   postgres_data:
 networks:
