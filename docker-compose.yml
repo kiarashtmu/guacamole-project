@@ -8,6 +8,7 @@ services:
       POSTGRES_USER: guac_admin
       POSTGRES_PASSWORD: CompNet2486
     volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
       - postgres_data:/var/lib/postgresql/data
     networks:
       - guacnet
@@ -32,6 +33,8 @@ services:
       - guacd
     networks:
       - guacnet
+    volumes:
+      - ./guacamole.properties:/etc/guacamole/guacamole.properties
   nginx:
     image: nginx:alpine
     volumes:
