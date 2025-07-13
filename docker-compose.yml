@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: guac_admin
       POSTGRES_PASSWORD: CompNet2486
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - "initdb:/docker-entrypoint-initdb.d:ro"
     networks:
       - guacnet
   guacd:
@@ -16,22 +16,46 @@ services:
     restart: always
     networks:
       - guacnet
-  guacamole:
+  guac-server-1:
     image: guacamole/guacamole
     restart: always
     ports:
       - "8080:8080"
     environment:
-      POSTGRES_HOSTNAME: postgres
-      POSTGRES_DATABASE: guacamole_db
-      POSTGRES_USER: guac_admin
-      POSTGRES_PASSWORD: CompNet2486
+      POSTGRESQL_ENABLED: "true"
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_USERNAME: guac_admin
+      POSTGRESQL_PASSWORD: CompNet2486
       GUACD_HOSTNAME: guacd
     depends_on:
       - postgres
       - guacd
     networks:
       - guacnet
+    volumes:
+      - "initdb:/opt/guacamole/extentions/guacamole-auth-jdbc/postgresql/schema:ro"
+  guac-server-2:
+    image: guacamole/guacamole
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      POSTGRESQL_ENABLED: "true"
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_USERNAME: guac_admin
+      POSTGRESQL_PASSWORD: CompNet2486
+
+      GUACD_HOSTNAME: guacd
+    depends_on:
+      - postgres
+      - guacd
+    networks:
+      - guacnet
+    volumes:
+      - "initdb:/opt/guacamole/extentions/guacamole-auth-jdbc/postgresql/schema:ro"
+
   nginx:
     image: nginx:alpine
     volumes:
@@ -39,11 +63,12 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - guacamole
+      - guac-server-1
+      - guac-server-2
     networks:
       - guacnet
 volumes:
-  postgres_data:
+  initdb:
 networks:
   guacnet:
   
