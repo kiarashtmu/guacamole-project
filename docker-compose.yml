@@ -17,11 +17,29 @@ services:
     restart: always
     networks:
       - guacnet
-  guacamole:
+  guacamole-1:
     image: guacamole/guacamole
     restart: always
     ports:
       - "8080:8080"
+    environment:
+      POSTGRES_HOSTNAME: postgres
+      POSTGRES_DATABASE: guacamole_db
+      POSTGRES_USER: guac_admin
+      POSTGRES_PASSWORD: CompNet2486
+      GUACD_HOSTNAME: guacd
+    depends_on:
+      - postgres
+      - guacd
+    networks:
+      - guacnet
+    volumes:
+      - ./guacamole.properties:/etc/guacamole/guacamole.properties
+  guacamole-2:
+    image: guacamole/guacamole
+    restart: always
+    ports:
+      - "8081:8080"
     environment:
       POSTGRES_HOSTNAME: postgres
       POSTGRES_DATABASE: guacamole_db
@@ -42,7 +60,8 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - guacamole
+      - guacamole-1
+      - guacamole-2
     networks:
       - guacnet
 volumes:
