@@ -135,6 +135,7 @@ Inside `nginx/default.conf`:
 
 ```nginx
 upstream guacamole_cluster {
+    ip_hash;
     server guacamole1:8080;
     server guacamole2:8080;
 }
@@ -142,14 +143,14 @@ upstream guacamole_cluster {
 server {
     listen 80;
 
-    location / {
+    location /guacamole/ {
         proxy_pass http://guacamole_cluster;
         ...
     }
 }
 ```
 
-This allows round-robin load balancing between the two Guacamole web UIs.
+Uses ip_hash for session persistence, so that each client consistently connects to the same Guacamole instance. This is important for keeping user sessions stable in a clustered setup.
 
 ---
 
